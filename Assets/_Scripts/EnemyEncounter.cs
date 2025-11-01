@@ -9,8 +9,8 @@ public class EnemyEncounter : MonoBehaviour
     private string offeringItem;
     private string requestedItem;
 
-    private string[] items = { "picareta", "tocha", "comida" };
-    private string[] offerings = { "cigarro", "álcool", "folha de coca" };
+    private readonly string[] items = { "picareta", "tocha", "comida" };
+    private readonly string[] offerings = { "cigarro", "álcool", "folha de coca" };
     private string tradeType;
     private PlayerInventory playerInventory;
 
@@ -44,7 +44,15 @@ public class EnemyEncounter : MonoBehaviour
 
     public void StartEncounter()
     {
-        playerInventory = FindObjectOfType<PlayerInventory>();
+        if (playerInventory == null)
+            playerInventory = FindObjectOfType<PlayerInventory>();
+
+        if (playerInventory == null)
+        {
+            Debug.LogError("❌ PlayerInventory não encontrado na cena!");
+            return;
+        }
+
         Debug.Log($"{enemyName}: Ei, minerador... troco minha {offeringItem} pela sua {requestedItem}.");
         Debug.Log("Digite 1 para TROCAR ou 2 para RECUSAR.");
         playerInventory.ShowInventory();
@@ -52,6 +60,12 @@ public class EnemyEncounter : MonoBehaviour
 
     public void Trade(PlayerInventory playerInventory)
     {
+        if (playerInventory == null)
+        {
+            Debug.LogError("❌ PlayerInventory é nulo durante a troca!");
+            return;
+        }
+
         if (playerInventory.HasItem(requestedItem))
         {
             playerInventory.RemoveItem(requestedItem);

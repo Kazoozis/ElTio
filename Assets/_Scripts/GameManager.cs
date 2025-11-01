@@ -8,36 +8,37 @@ public class GameManager : MonoBehaviour
     public GameObject[] enemyPrefabs;
 
     [Header("Chance Base de Ataque (%)")]
-    [Tooltip("Chance inicial de qualquer inimigo atacar ao recusar a troca.")]
     public float baseHostilityChance = 15f;
 
     [Header("Faminto — modificadores (%)")]
-    [Tooltip("+X% se jogador TEM comida")]
     public float famintoHasFoodBonus = 5f;
 
     [Header("Assombrado — modificadores (%)")]
-    [Tooltip("+X% se jogador NÃO TEM tocha")]
     public float assombradoNoTorchBonus = 5f;
-    [Tooltip("-X% se jogador TEM tocha")]
     public float assombradoHasTorchPenalty = 5f;
 
     [Header("Briguento — modificadores (%)")]
-    [Tooltip("+X% se jogador NÃO TEM picareta")]
     public float briguentoNoPickaxeBonus = 5f;
-    [Tooltip("-X% se jogador TEM picareta")]
     public float briguentoHasPickaxePenalty = 5f;
 
-    private List<(GameObject prefab, string type)> encounters = new List<(GameObject, string)>();
+    private List<(GameObject prefab, string type)> encounters = new();
     private int currentEncounter = 0;
     private bool isEncounterActive = false;
     private EnemyEncounter activeEnemy;
     private PlayerInventory playerInventory;
 
-    private Vector3 enemySpawnPosition = new Vector3(1.47f, 0.9999999f, 3.755702f);
+    private readonly Vector3 enemySpawnPosition = new(1.47f, 0.9999999f, 3.755702f);
 
     void Start()
     {
-        playerInventory = GetComponent<PlayerInventory>();
+        playerInventory = FindObjectOfType<PlayerInventory>();
+        if (playerInventory == null)
+        {
+            Debug.LogError("❌ Nenhum PlayerInventory encontrado na cena! Adicione o script ao jogador.");
+            enabled = false;
+            return;
+        }
+
         GenerateEncounters();
         Debug.Log("Aperte ESPAÇO para avançar na mina...");
     }
@@ -74,10 +75,29 @@ public class GameManager : MonoBehaviour
 
     void SpawnEnemy()
     {
-        var (prefab, tradeType) = encounters[currentEncounter];
-        GameObject enemyObj = Instantiate(prefab, enemySpawnPosition, Quaternion.identity);
+        if (enemyPrefabs == null || enemyPrefabs.Length == 0)
+        {
+            Debug.LogError("❌ Nenhum prefab de inimigo atribuído no GameManager!");
+            return;
+        }
 
+        var (prefab, tradeType) = encounters[currentEncounter];
+        if (prefab == null)
+        {
+            Debug.LogError($"❌ Prefab de inimigo na posição {currentEncounter} é nulo!");
+            return;
+        }
+
+        GameObject enemyObj = Instantiate(prefab, enemySpawnPosition, Quaternion.identity);
         activeEnemy = enemyObj.GetComponent<EnemyEncounter>();
+
+        if (activeEnemy == null)
+        {
+            Debug.LogError("❌ Prefab de inimigo não contém o script EnemyEncounter!");
+            Destroy(enemyObj);
+            return;
+        }
+
         activeEnemy.ConfigureEncounter(tradeType);
         activeEnemy.StartEncounter();
 
@@ -94,21 +114,26 @@ public class GameManager : MonoBehaviour
     void GenerateEncounters()
     {
         encounters.Clear();
+        string[] types = { "item>oferenda", "oferenda>item", "oferenda>oferenda" };
 
         for (int i = 0; i < 6; i++)
         {
-            string[] types = { "item>oferenda", "oferenda>item", "oferenda>oferenda" };
             string chosenType = types[Random.Range(0, types.Length)];
             GameObject chosenEnemy = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
             encounters.Add((chosenEnemy, chosenType));
         }
 
-        Debug.Log("Foram gerados " + encounters.Count + " encontros aleatórios.");
+        Debug.Log($"Foram gerados {encounters.Count} encontros aleatórios.");
     }
 
-    // ⚔️ Cálculo de hostilidade baseado no tipo e inventário
     void HandleRefusal(EnemyEncounter enemy)
     {
+        if (enemy == null)
+        {
+            Debug.LogWarning("⚠️ Nenhum inimigo ativo para recusar.");
+            return;
+        }
+
         float hostility = baseHostilityChance;
 
         bool temPicareta = playerInventory.HasItem("picareta");
@@ -123,17 +148,11 @@ public class GameManager : MonoBehaviour
                 break;
 
             case EnemyEncounter.EnemyType.Assombrado:
-                if (temTocha)
-                    hostility -= assombradoHasTorchPenalty;
-                else
-                    hostility += assombradoNoTorchBonus;
+                hostility += temTocha ? -assombradoHasTorchPenalty : assombradoNoTorchBonus;
                 break;
 
             case EnemyEncounter.EnemyType.Briguento:
-                if (temPicareta)
-                    hostility -= briguentoHasPickaxePenalty;
-                else
-                    hostility += briguentoNoPickaxeBonus;
+                hostility += temPicareta ? -briguentoHasPickaxePenalty : briguentoNoPickaxeBonus;
                 break;
         }
 
