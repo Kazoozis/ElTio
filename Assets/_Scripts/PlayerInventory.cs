@@ -10,7 +10,7 @@ public class PlayerInventory : MonoBehaviour
         items.Add("picareta");
         items.Add("tocha");
         items.Add("comida");
-        Debug.Log("Você inicia com: " + string.Join(", ", items));
+        Debug.Log("Vocï¿½ inicia com: " + string.Join(", ", items));
     }
 
     public bool HasItem(string item)
@@ -18,21 +18,29 @@ public class PlayerInventory : MonoBehaviour
         return items.Contains(item);
     }
 
+    public List<string> GetItems()
+{
+    return new List<string>(items);
+}
+
+
     public void AddItem(string item)
     {
         items.Add(item);
-        Debug.Log("Agora você tem: " + string.Join(", ", items));
+        Debug.Log("Agora vocï¿½ tem: " + string.Join(", ", items));
+        FindObjectOfType<InventoryUI>()?.UpdateUI();
     }
 
     public void RemoveItem(string item)
     {
         items.Remove(item);
         Debug.Log("Restam: " + string.Join(", ", items));
+        FindObjectOfType<InventoryUI>()?.UpdateUI();
     }
 
     public void CheckOfferings()
     {
-        string[] requiredOfferings = { "cigarro", "álcool", "folha de coca" };
+        string[] requiredOfferings = { "cigarro", "ï¿½lcool", "folha de coca" };
         bool hasAll = true;
 
         foreach (string offering in requiredOfferings)
@@ -45,8 +53,8 @@ public class PlayerInventory : MonoBehaviour
         }
 
         if (hasAll)
-            Debug.Log("O Diabo sorri. Você trouxe as oferendas certas. Fim de jogo.");
+            Debug.Log("O Diabo sorri. Vocï¿½ trouxe as oferendas certas. Fim de jogo.");
         else
-            Debug.Log("O Diabo ruge. Faltam oferendas. Você está perdido para sempre...");
+            Debug.Log("O Diabo ruge. Faltam oferendas. Vocï¿½ estï¿½ perdido para sempre...");
     }
 }
