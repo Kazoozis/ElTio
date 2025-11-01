@@ -29,6 +29,9 @@ public class GameManager : MonoBehaviour
 
     private readonly Vector3 enemySpawnPosition = new(1.47f, 0.9999999f, 3.755702f);
 
+    private TunnelMovement tunnelMovement;
+
+
     void Start()
     {
         playerInventory = FindObjectOfType<PlayerInventory>();
@@ -41,6 +44,9 @@ public class GameManager : MonoBehaviour
 
         GenerateEncounters();
         Debug.Log("Aperte ESPAÇO para avançar na mina...");
+
+        tunnelMovement = FindObjectOfType<TunnelMovement>();
+
     }
 
     void Update()
@@ -109,6 +115,10 @@ public class GameManager : MonoBehaviour
     {
         isEncounterActive = false;
         Debug.Log("Aperte ESPAÇO para continuar explorando...");
+
+        // 🆕 Move o cenário após o fim do encontro
+        tunnelMovement?.MoveToNextPosition();
+
     }
 
     void GenerateEncounters()
