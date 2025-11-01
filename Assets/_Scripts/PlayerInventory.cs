@@ -1,12 +1,17 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 using System.Collections.Generic;
 
 public class PlayerInventory : MonoBehaviour
 {
     private List<string> items = new();
 
+    private InventoryUI inventoryUI; // 🆕 referência automática à UI
+
     void Start()
     {
+        // 🆕 Encontrar a UI automaticamente na cena
+        inventoryUI = FindObjectOfType<InventoryUI>();
+
         string[] possibleItems = { "picareta", "tocha", "comida", "cigarro", "álcool", "folha de coca" };
 
         List<string> randomized = new(possibleItems);
@@ -20,11 +25,24 @@ public class PlayerInventory : MonoBehaviour
             items.Add(randomized[i]);
 
         Debug.Log("Você inicia com: " + string.Join(", ", items));
+
+        // 🆕 Atualiza a UI inicial
+        inventoryUI?.UpdateUI();
     }
 
     public bool HasItem(string item) => items.Contains(item);
-    public void AddItem(string item) => items.Add(item);
-    public void RemoveItem(string item) => items.Remove(item);
+
+    public void AddItem(string item)
+    {
+        items.Add(item);
+        inventoryUI?.UpdateUI(); // 🆕 atualiza UI ao adicionar
+    }
+
+    public void RemoveItem(string item)
+    {
+        items.Remove(item);
+        inventoryUI?.UpdateUI(); // 🆕 atualiza UI ao remover
+    }
 
     public void CheckOfferings()
     {
