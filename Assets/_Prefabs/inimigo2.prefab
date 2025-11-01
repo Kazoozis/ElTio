@@ -120,6 +120,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fa3bab4e87ef5c42a999f691abbad64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: Minerador
-  offeringItem: "\xC1lcool"
-  requestedEquipment: tocha
+  enemyName: Assombrado
+  enemyType: 1

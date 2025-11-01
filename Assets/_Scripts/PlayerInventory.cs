@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public class PlayerInventory : MonoBehaviour
@@ -7,10 +7,21 @@ public class PlayerInventory : MonoBehaviour
 
     void Start()
     {
-        items.Add("picareta");
-        items.Add("tocha");
-        items.Add("comida");
-        Debug.Log("Voc� inicia com: " + string.Join(", ", items));
+        string[] possibleItems = { "picareta", "tocha", "comida", "cigarro", "álcool", "folha de coca" };
+
+        // Embaralha e pega 3 itens aleatórios
+        List<string> randomized = new List<string>(possibleItems);
+        for (int i = 0; i < randomized.Count; i++)
+        {
+            int randomIndex = Random.Range(i, randomized.Count);
+            (randomized[i], randomized[randomIndex]) = (randomized[randomIndex], randomized[i]);
+        }
+
+        items.Add(randomized[0]);
+        items.Add(randomized[1]);
+        items.Add(randomized[2]);
+
+        Debug.Log("Você inicia com: " + string.Join(", ", items));
     }
 
     public bool HasItem(string item)
@@ -21,18 +32,16 @@ public class PlayerInventory : MonoBehaviour
     public void AddItem(string item)
     {
         items.Add(item);
-        Debug.Log("Agora voc� tem: " + string.Join(", ", items));
     }
 
     public void RemoveItem(string item)
     {
         items.Remove(item);
-        Debug.Log("Restam: " + string.Join(", ", items));
     }
 
     public void CheckOfferings()
     {
-        string[] requiredOfferings = { "cigarro", "�lcool", "folha de coca" };
+        string[] requiredOfferings = { "cigarro", "álcool", "folha de coca" };
         bool hasAll = true;
 
         foreach (string offering in requiredOfferings)
@@ -45,8 +54,21 @@ public class PlayerInventory : MonoBehaviour
         }
 
         if (hasAll)
-            Debug.Log("O Diabo sorri. Voc� trouxe as oferendas certas. Fim de jogo.");
+            Debug.Log("O Diabo sorri. Você trouxe as oferendas certas. Fim de jogo.");
         else
-            Debug.Log("O Diabo ruge. Faltam oferendas. Voc� est� perdido para sempre...");
+            Debug.Log("O Diabo ruge. Faltam oferendas. Você está perdido para sempre...");
+    }
+
+    // ✅ Método público para exibir o inventário
+    public void ShowInventory()
+    {
+        Debug.Log("📦 Inventário atual: " + string.Join(", ", items));
+    }
+
+    // ✅ Novo método para exibir inventário após troca
+    public void ShowUpdatedInventory(string tradedFrom, string tradedTo)
+    {
+        Debug.Log($"Você trocou sua {tradedFrom} por {tradedTo}.");
+        Debug.Log("Agora você tem: " + string.Join(", ", items));
     }
 }

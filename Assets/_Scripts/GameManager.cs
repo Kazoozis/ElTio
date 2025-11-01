@@ -1,39 +1,62 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject[] enemyPrefabs; // inimigo1, inimigo2, inimigo3
+    [Header("Prefabs de Inimigos (Faminto, Assombrado, Briguento)")]
+    public GameObject[] enemyPrefabs;
+
+    [Header("Chance Base de Ataque (%)")]
+    [Tooltip("Chance inicial de qualquer inimigo atacar ao recusar a troca.")]
+    public float baseHostilityChance = 15f;
+
+    [Header("Faminto ‚Äî modificadores (%)")]
+    [Tooltip("+X% se jogador TEM comida")]
+    public float famintoHasFoodBonus = 5f;
+
+    [Header("Assombrado ‚Äî modificadores (%)")]
+    [Tooltip("+X% se jogador N√ÉO TEM tocha")]
+    public float assombradoNoTorchBonus = 5f;
+    [Tooltip("-X% se jogador TEM tocha")]
+    public float assombradoHasTorchPenalty = 5f;
+
+    [Header("Briguento ‚Äî modificadores (%)")]
+    [Tooltip("+X% se jogador N√ÉO TEM picareta")]
+    public float briguentoNoPickaxeBonus = 5f;
+    [Tooltip("-X% se jogador TEM picareta")]
+    public float briguentoHasPickaxePenalty = 5f;
+
+    private List<(GameObject prefab, string type)> encounters = new List<(GameObject, string)>();
     private int currentEncounter = 0;
     private bool isEncounterActive = false;
     private EnemyEncounter activeEnemy;
     private PlayerInventory playerInventory;
 
-    // posiÁ„o fixa para spawn do inimigo
     private Vector3 enemySpawnPosition = new Vector3(1.47f, 0.9999999f, 3.755702f);
 
     void Start()
     {
         playerInventory = GetComponent<PlayerInventory>();
-        Debug.Log("Aperte ESPA«O para avanÁar na mina...");
+        GenerateEncounters();
+        Debug.Log("Aperte ESPA√áO para avan√ßar na mina...");
     }
 
     void Update()
     {
-        // AvanÁar na mina (pressionar espaÁo)
         if (Input.GetKeyDown(KeyCode.Space) && !isEncounterActive)
         {
-            if (currentEncounter < enemyPrefabs.Length)
+            if (currentEncounter < encounters.Count)
             {
                 SpawnEnemy();
             }
             else
             {
-                Debug.Log("VocÍ chegou ao altar do Diabo...");
+                Debug.Log("Voc√™ chegou ao altar do Diabo...");
                 playerInventory.CheckOfferings();
             }
         }
 
-        // Resposta do jogador (1 = trocar, 2 = recusar)
         if (isEncounterActive)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -43,7 +66,7 @@ public class GameManager : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                Debug.Log("VocÍ recusou a troca.");
+                HandleRefusal(activeEnemy);
                 EndEncounter();
             }
         }
@@ -51,10 +74,11 @@ public class GameManager : MonoBehaviour
 
     void SpawnEnemy()
     {
-        // Instancia o inimigo na posiÁ„o fixa e sem rotaÁ„o
-        GameObject enemyObj = Instantiate(enemyPrefabs[currentEncounter], enemySpawnPosition, Quaternion.identity);
+        var (prefab, tradeType) = encounters[currentEncounter];
+        GameObject enemyObj = Instantiate(prefab, enemySpawnPosition, Quaternion.identity);
 
         activeEnemy = enemyObj.GetComponent<EnemyEncounter>();
+        activeEnemy.ConfigureEncounter(tradeType);
         activeEnemy.StartEncounter();
 
         isEncounterActive = true;
@@ -64,6 +88,71 @@ public class GameManager : MonoBehaviour
     void EndEncounter()
     {
         isEncounterActive = false;
-        Debug.Log("Aperte ESPA«O para continuar explorando...");
+        Debug.Log("Aperte ESPA√áO para continuar explorando...");
+    }
+
+    void GenerateEncounters()
+    {
+        encounters.Clear();
+
+        for (int i = 0; i < 6; i++)
+        {
+            string[] types = { "item>oferenda", "oferenda>item", "oferenda>oferenda" };
+            string chosenType = types[Random.Range(0, types.Length)];
+            GameObject chosenEnemy = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            encounters.Add((chosenEnemy, chosenType));
+        }
+
+        Debug.Log("Foram gerados " + encounters.Count + " encontros aleat√≥rios.");
+    }
+
+    // ‚öîÔ∏è C√°lculo de hostilidade baseado no tipo e invent√°rio
+    void HandleRefusal(EnemyEncounter enemy)
+    {
+        float hostility = baseHostilityChance;
+
+        bool temPicareta = playerInventory.HasItem("picareta");
+        bool temTocha = playerInventory.HasItem("tocha");
+        bool temComida = playerInventory.HasItem("comida");
+
+        switch (enemy.enemyType)
+        {
+            case EnemyEncounter.EnemyType.Faminto:
+                if (temComida)
+                    hostility += famintoHasFoodBonus;
+                break;
+
+            case EnemyEncounter.EnemyType.Assombrado:
+                if (temTocha)
+                    hostility -= assombradoHasTorchPenalty;
+                else
+                    hostility += assombradoNoTorchBonus;
+                break;
+
+            case EnemyEncounter.EnemyType.Briguento:
+                if (temPicareta)
+                    hostility -= briguentoHasPickaxePenalty;
+                else
+                    hostility += briguentoNoPickaxeBonus;
+                break;
+        }
+
+        hostility = Mathf.Clamp(hostility, 0f, 100f);
+        float roll = Random.Range(0f, 100f);
+
+        Debug.Log($"Chance de hostilidade ({enemy.enemyType}): {hostility}% | Rolagem: {roll:F2}%");
+
+        if (roll <= hostility)
+        {
+            Debug.Log($"{enemy.enemyType} se enfurece e te ataca! üíÄ Jogador morreu.");
+            Debug.Log("üîÅ Reiniciando cen√°rio...");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        else
+        {
+            Debug.Log($"{enemy.enemyType} apenas te encara e te deixa ir...");
+        }
+
+        Destroy(enemy.gameObject);
     }
 }
