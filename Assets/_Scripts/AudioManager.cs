@@ -21,6 +21,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip deathClip;
 
     private Coroutine voiceCoroutine;
+    private bool voicePlayedThisEncounter = false; // ✅ controla uma vez por encontro
 
     private void Awake()
     {
@@ -44,7 +45,7 @@ public class AudioManager : MonoBehaviour
         source.Play();
     }
 
-    // Passos
+    // 🎧 Passos
     public void StartSteps()
     {
         if (stepsSource.isPlaying) return;
@@ -54,51 +55,47 @@ public class AudioManager : MonoBehaviour
         stepsSource.Play();
     }
 
-    public void StopSteps()
-    {
-        stepsSource.Stop();
-    }
+    public void StopSteps() => stepsSource.Stop();
 
-    // Fala do minerador — **sempre apenas 1 coroutine**
-    public void StartVoice()
+    // 🎧 Voz curta de 4 segundos (uma vez por encontro)
+    public void PlayVoiceFor4Seconds()
     {
-        StopVoice(); // garante que nenhum som antigo esteja ativo
-        voiceCoroutine = StartCoroutine(VoiceLoop());
-    }
+        if (voicePlayedThisEncounter) return; // ✅ ignora se já tocou neste encontro
 
-    public void StopVoice()
-    {
         if (voiceCoroutine != null)
         {
             StopCoroutine(voiceCoroutine);
             voiceCoroutine = null;
         }
-        voiceSource.Stop();
+
+        voiceCoroutine = StartCoroutine(PlayVoiceCoroutine());
     }
 
-    private IEnumerator VoiceLoop()
+    private IEnumerator PlayVoiceCoroutine()
     {
-        while (true)
+        voicePlayedThisEncounter = true; // marca como tocada
+
+        // toca um único clip aleatório por 4 segundos
+        if (voiceClips.Length > 0)
         {
             int idx = Random.Range(0, voiceClips.Length);
             voiceSource.pitch = Random.Range(0.95f, 1.05f);
             voiceSource.PlayOneShot(voiceClips[idx], 0.3f);
-            yield return new WaitForSeconds(0.15f); // intervalo seguro
         }
+
+        yield return new WaitForSeconds(4f);
+
+        voiceCoroutine = null;
     }
 
-    public void PlayWhisper()
+    // Chamado no fim do encontro para resetar a voz
+    public void ResetVoiceForNextEncounter()
     {
-        whisperSource.PlayOneShot(whisperClip, 0.6f);
+        voicePlayedThisEncounter = false;
     }
 
-    public void PlayDevilLaugh()
-    {
-        devilSource.PlayOneShot(devilLaugh, 1f);
-    }
-
-    public void PlayDeath()
-    {
-        devilSource.PlayOneShot(deathClip, 1f);
-    }
+    // 🎧 Efeitos especiais
+    public void PlayWhisper() => whisperSource.PlayOneShot(whisperClip, 0.6f);
+    public void PlayDevilLaugh() => devilSource.PlayOneShot(devilLaugh, 1f);
+    public void PlayDeath() => devilSource.PlayOneShot(deathClip, 1f);
 }

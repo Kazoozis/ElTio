@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public class DialogueManager : MonoBehaviour
@@ -32,6 +32,15 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        Debug.Log(lines.Dequeue());
+        string line = lines.Dequeue();
+        Debug.Log(line);
+
+        // 🎧 Toca voz SOMENTE quando for uma fala de troca do inimigo
+        if (AudioManager.Instance != null &&
+            line.Contains("Tenho") &&
+            line.Contains("para trocar"))
+        {
+            AudioManager.Instance.PlayVoiceFor4Seconds();
+        }
     }
 }
