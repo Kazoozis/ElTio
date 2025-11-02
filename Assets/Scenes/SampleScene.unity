@@ -862,10 +862,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16854014c95a96544810addebd5f67ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefabs:
-  - {fileID: 3041857499868734686, guid: 5e5a5978404134046a882f6afd35efa7, type: 3}
-  - {fileID: 3173498018186712472, guid: ee92579ca2576b34bbf0c64ac9a23851, type: 3}
-  - {fileID: 2035550285316932271, guid: 9ec96208ba56c0e4a9e73cba283983cd, type: 3}
+  famintoPrefab: {fileID: 340589962936192347, guid: 626cd913488ea3e47a265e70ec369647, type: 3}
+  assombradoPrefab: {fileID: 3173498018186712472, guid: ee92579ca2576b34bbf0c64ac9a23851, type: 3}
+  briguentoPrefab: {fileID: 4905762263958495601, guid: 549c727254920cf4b94219a07207503b, type: 3}
   baseHostilityChance: 15
   famintoHasFoodBonus: 5
   assombradoNoTorchBonus: 5
