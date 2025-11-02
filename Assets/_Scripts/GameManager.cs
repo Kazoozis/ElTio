@@ -4,7 +4,12 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject[] enemyPrefabs;
+    [Header("Prefabs dos Inimigos")]
+    public GameObject famintoPrefab;
+    public GameObject assombradoPrefab;
+    public GameObject briguentoPrefab;
+
+    [Header("Configurações de Hostilidade")]
     public float baseHostilityChance = 15f;
     public float famintoHasFoodBonus = 5f;
     public float assombradoNoTorchBonus = 5f;
@@ -12,7 +17,7 @@ public class GameManager : MonoBehaviour
     public float briguentoNoPickaxeBonus = 5f;
     public float briguentoHasPickaxePenalty = 5f;
 
-    private List<(GameObject prefab, string type)> encounters = new();
+    private List<(GameObject prefab, EnemyEncounter.EnemyType type, string tradeType)> encounters = new();
     private int currentEncounter = 0;
 
     private bool isEncounterActive = false;
@@ -23,7 +28,9 @@ public class GameManager : MonoBehaviour
     private PlayerInventory playerInventory;
     private TunnelMovement tunnelMovement;
 
-    private readonly Vector3 enemySpawnPosition = new Vector3(1.47f, 1f, 3.75f);
+    // posição e rotação exatas solicitadas
+    private readonly Vector3 enemySpawnPosition = new Vector3(1.321f, 0.099f, 3.75f);
+    private readonly Quaternion enemySpawnRotation = Quaternion.Euler(0f, -90f, 0f);
 
     void Start()
     {
@@ -82,14 +89,17 @@ public class GameManager : MonoBehaviour
 
     void SpawnEnemy()
     {
-        var (prefab, type) = encounters[currentEncounter];
-        GameObject obj = Instantiate(prefab, enemySpawnPosition, Quaternion.identity);
-        activeEnemy = obj.GetComponent<EnemyEncounter>();
+        var (prefab, type, tradeType) = encounters[currentEncounter];
 
-        activeEnemy.ConfigureEncounter(type);
+        // instancia inimigo na posição e rotação exatas
+        GameObject obj = Instantiate(prefab, enemySpawnPosition, enemySpawnRotation);
+
+        activeEnemy = obj.GetComponent<EnemyEncounter>();
+        activeEnemy.enemyType = type;
+        activeEnemy.ConfigureEncounter(tradeType);
         activeEnemy.StartEncounter();
 
-        // 🎧 Se for o último encontro → risada do Diabo
+        // Se for o último encontro → risada do Diabo
         if (currentEncounter == encounters.Count - 1 && AudioManager.Instance != null)
             AudioManager.Instance.PlayDevilLaugh();
 
@@ -107,10 +117,21 @@ public class GameManager : MonoBehaviour
     void GenerateEncounters()
     {
         encounters.Clear();
-        string[] t = { "item>oferenda", "oferenda>item", "oferenda>oferenda" };
+        string[] tradeTypes = { "item>oferenda", "oferenda>item", "oferenda>oferenda" };
+
+        // ✅ Gera uma sequência com os 3 tipos de inimigo
+        GameObject[] prefabs = { famintoPrefab, assombradoPrefab, briguentoPrefab };
+        EnemyEncounter.EnemyType[] types = {
+            EnemyEncounter.EnemyType.Faminto,
+            EnemyEncounter.EnemyType.Assombrado,
+            EnemyEncounter.EnemyType.Briguento
+        };
 
         for (int i = 0; i < 6; i++)
-            encounters.Add((enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], t[Random.Range(0, t.Length)]));
+        {
+            int index = i % 3; // alterna entre Faminto, Assombrado e Briguento
+            encounters.Add((prefabs[index], types[index], tradeTypes[Random.Range(0, tradeTypes.Length)]));
+        }
     }
 
     void HandleRefusal(EnemyEncounter enemy)
@@ -142,7 +163,6 @@ public class GameManager : MonoBehaviour
         if (roll <= hostility)
         {
             Debug.Log($"{enemy.enemyType} se enfurece e te ataca! 💀 Jogador morreu.");
-            // 🎧 Som de morte
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlayDeath();
 
