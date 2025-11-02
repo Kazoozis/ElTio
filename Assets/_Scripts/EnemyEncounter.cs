@@ -14,6 +14,9 @@ public class EnemyEncounter : MonoBehaviour
     private string tradeType;
     private PlayerInventory playerInventory;
 
+    // 🎧 Controle para impedir repetição do áudio
+    private bool hasPlayedVoice = false;
+
     // ----------------------
     // FAMINTO — falas extras
     // ----------------------
@@ -176,6 +179,13 @@ public class EnemyEncounter : MonoBehaviour
             $"Ele quer trocar **{requestedItem}** por **{offeringItem}**.",
             "Pressione **1** para ACEITAR ou **2** para RECUSAR."
         });
+
+        // 🎧 Garante que o som da fala só toque uma vez
+        if (!hasPlayedVoice && AudioManager.Instance != null)
+        {
+            hasPlayedVoice = true;
+            AudioManager.Instance.PlayVoiceFor4Seconds();
+        }
     }
 
     // -----------------------------------
@@ -185,7 +195,6 @@ public class EnemyEncounter : MonoBehaviour
     {
         string[] pool = null;
 
-        // Primeiro checa por itens "normais" (picareta/tocha/comida)
         if (requestedItem == "picareta" || requestedItem == "tocha" || requestedItem == "comida")
         {
             switch (enemyType)
@@ -221,23 +230,13 @@ public class EnemyEncounter : MonoBehaviour
                     break;
             }
         }
-        else // Caso seja uma oferenda que está sendo pedida (cigarro/álcool/folha de coca)
+        else
         {
             switch (enemyType)
             {
                 case EnemyType.Faminto:
-                    pool = requestedItem switch
-                    {
-                        "álcool" => famintoTocha /*placeholder: faminto já tem álcool/cigarro/folha definidos antes*/ ,
-                        "cigarro" => famintoComida /*placeholder*/,
-                        "folha de coca" => famintoPicareta /*placeholder*/,
-                        _ => famintoOferece
-                    };
-                    // Observação: Faminto já tinha arrays originais para álcool/cigarro/folha (mantidos no seu script anterior).
-                    // Se você quiser, posso mover aquelas arrays originais para cá. Por enquanto estou reutilizando placeholders
-                    // para manter apenas as novas adições solicitadas. Se preferir, eu faço a unificação completa.
+                    pool = famintoComida;
                     break;
-
                 case EnemyType.Assombrado:
                     pool = requestedItem switch
                     {
@@ -247,7 +246,6 @@ public class EnemyEncounter : MonoBehaviour
                         _ => assombradoOferece
                     };
                     break;
-
                 case EnemyType.Briguento:
                     pool = requestedItem switch
                     {
@@ -260,7 +258,6 @@ public class EnemyEncounter : MonoBehaviour
             }
         }
 
-        // fallback seguro
         string chosen = (pool != null && pool.Length > 0)
             ? pool[Random.Range(0, pool.Length)]
             : $"Ei, minerador... troco minha {offeringItem} pela sua {requestedItem}.";
@@ -287,7 +284,9 @@ public class EnemyEncounter : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Opcional: expor as falas de recusa para uso externo (GameManager pode chamá-las antes de calcular hostilidade)
+    // ------------------------
+    // FALA DE RECUSA
+    // ------------------------
     public string GetRefusalLine()
     {
         string[] pool = null;

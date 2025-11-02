@@ -34,10 +34,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Aperte ESPAÇO para avançar...");
     }
 
-    public void SetDialogueState(bool state)
-    {
-        isDialogueActive = state;
-    }
+    public void SetDialogueState(bool state) => isDialogueActive = state;
 
     void Update()
     {
@@ -92,6 +89,10 @@ public class GameManager : MonoBehaviour
         activeEnemy.ConfigureEncounter(type);
         activeEnemy.StartEncounter();
 
+        // 🎧 Se for o último encontro → risada do Diabo
+        if (currentEncounter == encounters.Count - 1 && AudioManager.Instance != null)
+            AudioManager.Instance.PlayDevilLaugh();
+
         isEncounterActive = true;
         currentEncounter++;
     }
@@ -123,14 +124,11 @@ public class GameManager : MonoBehaviour
         switch (enemy.enemyType)
         {
             case EnemyEncounter.EnemyType.Faminto:
-                if (hasFood)
-                    hostility += famintoHasFoodBonus;
+                if (hasFood) hostility += famintoHasFoodBonus;
                 break;
-
             case EnemyEncounter.EnemyType.Assombrado:
                 hostility += hasTorch ? -assombradoHasTorchPenalty : assombradoNoTorchBonus;
                 break;
-
             case EnemyEncounter.EnemyType.Briguento:
                 hostility += hasPickaxe ? -briguentoHasPickaxePenalty : briguentoNoPickaxeBonus;
                 break;
@@ -144,6 +142,10 @@ public class GameManager : MonoBehaviour
         if (roll <= hostility)
         {
             Debug.Log($"{enemy.enemyType} se enfurece e te ataca! 💀 Jogador morreu.");
+            // 🎧 Som de morte
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayDeath();
+
             Debug.Log("🔁 Reiniciando cenário...");
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
