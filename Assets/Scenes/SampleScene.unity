@@ -822,7 +822,6 @@ MonoBehaviour:
   - {x: -58.86014, y: -63.91763, z: 117.8799}
   - {x: -58.86014, y: -63.91763, z: 81}
   isMoving: 0
-  stepInterval: 0.5
 --- !u!114 &1074086780 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5227720353866909541, guid: 3e8432825c198f448ac63e83e0b4f435, type: 3}

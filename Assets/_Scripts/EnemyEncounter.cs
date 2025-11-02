@@ -65,19 +65,29 @@ public class EnemyEncounter : MonoBehaviour
     }
 
     public void StartEncounter()
-    {
-        if (playerInventory == null)
-            playerInventory = FindObjectOfType<PlayerInventory>();
+{
+    if (playerInventory == null)
+        playerInventory = FindObjectOfType<PlayerInventory>();
 
-        string dialogue = GenerateDialogue();
+    string dialogue = GenerateDialogue();
 
-        DialogueManager.Instance.ShowDialogue(new string[]{
-            $"{enemyName} aparece na sua frente...",
-            dialogue,
-            $"Ele quer trocar **{requestedItem}** por **{offeringItem}**.",
-            "Pressione **1** para ACEITAR ou **2** para RECUSAR."
-        });
-    }
+    // inicia a fala **uma única vez**
+    AudioManager.Instance.StartVoice();
+
+    DialogueManager.Instance.ShowDialogue(new string[] {
+        $"{enemyName} aparece na sua frente...",
+        dialogue,
+        $"Ele quer trocar **{requestedItem}** por **{offeringItem}**.",
+        "Pressione **1** para ACEITAR ou **2** para RECUSAR."
+    });
+}
+
+public void EndEncounter()
+{
+    // garante que a fala pare
+    AudioManager.Instance.StopVoice();
+}
+
 
     private string GenerateDialogue()
     {
@@ -106,6 +116,9 @@ public class EnemyEncounter : MonoBehaviour
             playerInventory.ShowUpdatedInventory(requestedItem, offeringItem);
         }
         else Debug.Log($"Você não tem {requestedItem} para trocar!");
+
+        // 🔇 para voz ao encerrar o encontro
+        FindObjectOfType<TunnelMovement>().StopMinerVoice();
 
         Destroy(gameObject);
     }

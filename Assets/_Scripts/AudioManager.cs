@@ -1,10 +1,10 @@
 using UnityEngine;
+using System.Collections;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    [Header("Sources")]
     public AudioSource musicSource;
     public AudioSource ambientSource;
     public AudioSource stepsSource;
@@ -12,7 +12,6 @@ public class AudioManager : MonoBehaviour
     public AudioSource whisperSource;
     public AudioSource devilSource;
 
-    [Header("Clips")]
     public AudioClip musicLoop;
     public AudioClip ambientLoop;
     public AudioClip[] voiceClips;
@@ -21,85 +20,85 @@ public class AudioManager : MonoBehaviour
     public AudioClip devilLaugh;
     public AudioClip deathClip;
 
+    private Coroutine voiceCoroutine;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
-
         DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
-        // inicia música e som ambiente em loop
-        if (musicLoop != null)
-        {
-            musicSource.clip = musicLoop;
-            musicSource.loop = true;
-            musicSource.volume = 0.35f;
-            musicSource.Play();
-        }
-
-        if (ambientLoop != null)
-        {
-            ambientSource.clip = ambientLoop;
-            ambientSource.loop = true;
-            ambientSource.volume = 0.5f;
-            ambientSource.Play();
-        }
+        PlayLoop(musicSource, musicLoop, 0.35f);
+        PlayLoop(ambientSource, ambientLoop, 0.5f);
     }
 
-    // 🔹 Som de passos
-    public void PlayStep()
+    private void PlayLoop(AudioSource source, AudioClip clip, float volume)
     {
-        if (stepClip != null)
-            stepsSource.PlayOneShot(stepClip, 0.4f);
+        if (clip == null) return;
+        source.clip = clip;
+        source.volume = volume;
+        source.loop = true;
+        source.Play();
     }
 
-    // 🔹 Voz estilo Animal Crossing
-    public void PlayVoice()
+    // Passos
+    public void StartSteps()
     {
-        if (voiceClips.Length == 0) return;
-        int index = Random.Range(0, voiceClips.Length);
-        voiceSource.PlayOneShot(voiceClips[index], 0.3f);
+        if (stepsSource.isPlaying) return;
+        stepsSource.clip = stepClip;
+        stepsSource.loop = true;
+        stepsSource.volume = 0.4f;
+        stepsSource.Play();
     }
 
-    // 🔹 Sussurros aleatórios
+    public void StopSteps()
+    {
+        stepsSource.Stop();
+    }
+
+    // Fala do minerador — **sempre apenas 1 coroutine**
+    public void StartVoice()
+    {
+        StopVoice(); // garante que nenhum som antigo esteja ativo
+        voiceCoroutine = StartCoroutine(VoiceLoop());
+    }
+
+    public void StopVoice()
+    {
+        if (voiceCoroutine != null)
+        {
+            StopCoroutine(voiceCoroutine);
+            voiceCoroutine = null;
+        }
+        voiceSource.Stop();
+    }
+
+    private IEnumerator VoiceLoop()
+    {
+        while (true)
+        {
+            int idx = Random.Range(0, voiceClips.Length);
+            voiceSource.pitch = Random.Range(0.95f, 1.05f);
+            voiceSource.PlayOneShot(voiceClips[idx], 0.3f);
+            yield return new WaitForSeconds(0.15f); // intervalo seguro
+        }
+    }
+
     public void PlayWhisper()
     {
-        if (whisperClip != null)
-            whisperSource.PlayOneShot(whisperClip, 0.6f);
+        whisperSource.PlayOneShot(whisperClip, 0.6f);
     }
 
-    // 🔹 Risada do El Tío
     public void PlayDevilLaugh()
     {
-        if (devilLaugh != null)
-            devilSource.PlayOneShot(devilLaugh, 1f);
+        devilSource.PlayOneShot(devilLaugh, 1f);
     }
 
-    // 🔹 Som de morte
     public void PlayDeath()
     {
-        if (deathClip != null)
-            devilSource.PlayOneShot(deathClip, 1f);
-    }
-
-    // 🔹 Fade opcional de volume (pra efeitos dramáticos)
-    public void FadeMusic(float targetVolume, float duration)
-    {
-        StartCoroutine(FadeVolume(musicSource, targetVolume, duration));
-    }
-
-    private System.Collections.IEnumerator FadeVolume(AudioSource source, float target, float duration)
-    {
-        float start = source.volume;
-        float t = 0f;
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            source.volume = Mathf.Lerp(start, target, t / duration);
-            yield return null;
-        }
+        devilSource.PlayOneShot(deathClip, 1f);
     }
 }

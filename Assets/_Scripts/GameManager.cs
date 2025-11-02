@@ -94,9 +94,6 @@ public class GameManager : MonoBehaviour
 
         isEncounterActive = true;
         currentEncounter++;
-
-        // toca voz do minerador ao aparecer
-        tunnelMovement.PlayMinerVoice();
     }
 
     void EndEncounter()
@@ -132,11 +129,7 @@ public class GameManager : MonoBehaviour
         if (Random.Range(0f, 100f) <= hostility)
         {
             Debug.Log("💀 Inimigo ataca! Você morreu.");
-
-            // 🔊 Toca som de morte
             AudioManager.Instance.PlayDeath();
-
-            // pausa breve pra deixar o som tocar
             StartCoroutine(RestartAfterDelay(2f));
         }
 
