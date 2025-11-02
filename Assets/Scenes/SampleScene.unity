@@ -2213,6 +2213,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8571824348423404314, guid: ccbe1c20df620fe4097f091b4a9d2fd5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1546117628}
     - targetCorrespondingSourceObject: {fileID: 5757747261568853232, guid: ccbe1c20df620fe4097f091b4a9d2fd5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1635828126}
@@ -3310,8 +3313,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   famintoPrefab: {fileID: 340589962936192347, guid: 626cd913488ea3e47a265e70ec369647, type: 3}
-  assombradoPrefab: {fileID: 3173498018186712472, guid: ee92579ca2576b34bbf0c64ac9a23851, type: 3}
+  assombradoPrefab: {fileID: 8081608310779172451, guid: 74e88afce2278d44aa9b50d1738633b4, type: 3}
   briguentoPrefab: {fileID: 4905762263958495601, guid: 549c727254920cf4b94219a07207503b, type: 3}
+  diaboPrefab: {fileID: 7451550489594253564, guid: 08b43d5eb32f46a4ba625073a5a4f4aa, type: 3}
   baseHostilityChance: 15
   famintoHasFoodBonus: 5
   assombradoNoTorchBonus: 5
@@ -6686,6 +6690,100 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1 &1546117627
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1546117628}
+  - component: {fileID: 1546117629}
+  m_Layer: 0
+  m_Name: Spot Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1546117628
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1546117627}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.11277753, y: -0.18401393, z: -0.021258572, w: 0.9762009}
+  m_LocalPosition: {x: 62.396, y: 64.858, z: -87.598}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 582340487}
+  m_LocalEulerAnglesHint: {x: -13.18, y: -21.35, z: 0}
+--- !u!108 &1546117629
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1546117627}
+  m_Enabled: 1
+  serializedVersion: 10
+  m_Type: 0
+  m_Shape: 0
+  m_Color: {r: 1, g: 0.5801887, b: 0.5801887, a: 1}
+  m_Intensity: 1
+  m_Range: 10
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
 --- !u!1 &1572316325
 GameObject:
   m_ObjectHideFlags: 0
@@ -8513,6 +8611,14 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: b40cdf45c38db874dafc799a64e8614d, type: 2}
+    - target: {fileID: 3174281377700332675, guid: e577146455239f845be33c17ea0835c6, type: 3}
+      propertyPath: stopPositions.Array.data[7].y
+      value: -52.60747
+      objectReference: {fileID: 0}
+    - target: {fileID: 3174281377700332675, guid: e577146455239f845be33c17ea0835c6, type: 3}
+      propertyPath: stopPositions.Array.data[7].z
+      value: 3.825
+      objectReference: {fileID: 0}
     - target: {fileID: 5170216533409576059, guid: e577146455239f845be33c17ea0835c6, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
@@ -8586,7 +8692,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 45383972929085312, guid: 3e8432825c198f448ac63e83e0b4f435, type: 3}
       propertyPath: m_Color.a
-      value: 0.07058824
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2448316960456957890, guid: 3e8432825c198f448ac63e83e0b4f435, type: 3}
       propertyPath: m_AnchorMax.y
