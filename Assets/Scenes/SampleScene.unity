@@ -284,7 +284,7 @@ GameObject:
   - component: {fileID: 422691339}
   - component: {fileID: 422691340}
   m_Layer: 0
-  m_Name: Audio Source (3)
+  m_Name: RisadaDiablo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -540,7 +540,7 @@ GameObject:
   - component: {fileID: 538804525}
   - component: {fileID: 538804526}
   m_Layer: 0
-  m_Name: Audio Source (5)
+  m_Name: Passos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -573,7 +573,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 4147e4c99995d544f953efed9fa7ba1b, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.4
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1031,19 +1031,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0ca421a5e8b9954da04ac1a49d65965, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicSource: {fileID: 0}
-  ambientSource: {fileID: 0}
-  stepsSource: {fileID: 0}
-  voiceSource: {fileID: 0}
-  whisperSource: {fileID: 0}
-  devilSource: {fileID: 0}
-  musicLoop: {fileID: 0}
-  ambientLoop: {fileID: 0}
-  voiceClips: []
-  stepClip: {fileID: 0}
-  whisperClip: {fileID: 0}
-  devilLaugh: {fileID: 0}
-  deathClip: {fileID: 0}
+  musicSource: {fileID: 137265635}
+  ambientSource: {fileID: 1793071414}
+  stepsSource: {fileID: 538804526}
+  voiceSource: {fileID: 1148611748}
+  whisperSource: {fileID: 1113845547}
+  devilSource: {fileID: 422691340}
+  musicLoop: {fileID: 8300000, guid: de85f0b787d4f8248ad92b5f820f5d6b, type: 3}
+  ambientLoop: {fileID: 8300000, guid: fbf8d89fc87d6e148a2cc331ec874c3a, type: 3}
+  voiceClips:
+  - {fileID: 8300000, guid: cf9e72bfe894d2a4e90551d77136bf55, type: 3}
+  stepClip: {fileID: 8300000, guid: 4147e4c99995d544f953efed9fa7ba1b, type: 3}
+  whisperClip: {fileID: 8300000, guid: 88c4711a9c6dc8c49b0c47120690eab0, type: 3}
+  devilLaugh: {fileID: 8300000, guid: 1e0107a3f95d09c47aa45b74a85d4d5b, type: 3}
+  deathClip: {fileID: 8300000, guid: 072697133ab3906459b14a0e67e10814, type: 3}
 --- !u!4 &1090929816
 Transform:
   m_ObjectHideFlags: 0
@@ -1077,7 +1078,7 @@ GameObject:
   - component: {fileID: 1113845546}
   - component: {fileID: 1113845547}
   m_Layer: 0
-  m_Name: Audio Source (6)
+  m_Name: Sussurro
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1110,7 +1111,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 88c4711a9c6dc8c49b0c47120690eab0, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1546,7 +1547,7 @@ GameObject:
   - component: {fileID: 1793071413}
   - component: {fileID: 1793071414}
   m_Layer: 0
-  m_Name: Audio Source (4)
+  m_Name: SomAmbiente
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1579,9 +1580,9 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: fbf8d89fc87d6e148a2cc331ec874c3a, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
