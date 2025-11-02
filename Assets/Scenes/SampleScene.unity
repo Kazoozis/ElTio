@@ -123,63 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &93710637
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4905762263958495601, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_Name
-      value: bravo
-      objectReference: {fileID: 0}
-    - target: {fileID: 5719312476302179275, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 2.5354943
-      objectReference: {fileID: 0}
-    - target: {fileID: 5719312476302179275, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.00000047683716
-      objectReference: {fileID: 0}
-    - target: {fileID: 5719312476302179275, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -11.41358
-      objectReference: {fileID: 0}
-    - target: {fileID: 5719312476302179275, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 5719312476302179275, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5719312476302179275, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 5719312476302179275, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5719312476302179275, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5719312476302179275, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 5719312476302179275, guid: 549c727254920cf4b94219a07207503b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 549c727254920cf4b94219a07207503b, type: 3}
 --- !u!1 &137265633
 GameObject:
   m_ObjectHideFlags: 0
@@ -919,10 +862,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16854014c95a96544810addebd5f67ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefabs:
-  - {fileID: 340589962936192347, guid: 626cd913488ea3e47a265e70ec369647, type: 3}
-  - {fileID: 4905762263958495601, guid: 549c727254920cf4b94219a07207503b, type: 3}
-  - {fileID: 2035550285316932271, guid: 9ec96208ba56c0e4a9e73cba283983cd, type: 3}
+  famintoPrefab: {fileID: 0}
+  assombradoPrefab: {fileID: 0}
+  briguentoPrefab: {fileID: 0}
   baseHostilityChance: 15
   famintoHasFoodBonus: 5
   assombradoNoTorchBonus: 5
@@ -1684,7 +1626,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 25db2e80772987146989e0cc85a4d342, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1960483463}
   m_SourcePrefab: {fileID: 100100000, guid: 25db2e80772987146989e0cc85a4d342, type: 3}
 --- !u!1 &1793071412
 GameObject:
@@ -1814,6 +1759,32 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1960483462 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 25db2e80772987146989e0cc85a4d342, type: 3}
+  m_PrefabInstance: {fileID: 1788962449}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1960483463
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960483462}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: df67c56e760505543b3b093f0558d7c1, type: 3}
+  m_Controller: {fileID: 9100000, guid: 7ce24014994a817478e21d69ef56bcbc, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1996847107
 GameObject:
   m_ObjectHideFlags: 0
@@ -2193,4 +2164,3 @@ SceneRoots:
   - {fileID: 1295344425519206725}
   - {fileID: 1090929816}
   - {fileID: 1788962449}
-  - {fileID: 93710637}
