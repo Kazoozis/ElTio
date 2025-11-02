@@ -115,21 +115,41 @@ public class GameManager : MonoBehaviour
     void HandleRefusal(EnemyEncounter enemy)
     {
         float hostility = baseHostilityChance;
-        bool pic = playerInventory.HasItem("picareta");
-        bool toc = playerInventory.HasItem("tocha");
-        bool com = playerInventory.HasItem("comida");
+
+        bool hasPickaxe = playerInventory.HasItem("picareta");
+        bool hasTorch = playerInventory.HasItem("tocha");
+        bool hasFood = playerInventory.HasItem("comida");
 
         switch (enemy.enemyType)
         {
-            case EnemyEncounter.EnemyType.Faminto: if (com) hostility += famintoHasFoodBonus; break;
-            case EnemyEncounter.EnemyType.Assombrado: hostility += toc ? -assombradoHasTorchPenalty : assombradoNoTorchBonus; break;
-            case EnemyEncounter.EnemyType.Briguento: hostility += pic ? -briguentoHasPickaxePenalty : briguentoNoPickaxeBonus; break;
+            case EnemyEncounter.EnemyType.Faminto:
+                if (hasFood)
+                    hostility += famintoHasFoodBonus;
+                break;
+
+            case EnemyEncounter.EnemyType.Assombrado:
+                hostility += hasTorch ? -assombradoHasTorchPenalty : assombradoNoTorchBonus;
+                break;
+
+            case EnemyEncounter.EnemyType.Briguento:
+                hostility += hasPickaxe ? -briguentoHasPickaxePenalty : briguentoNoPickaxeBonus;
+                break;
         }
 
-        if (Random.Range(0f, 100f) <= hostility)
+        hostility = Mathf.Clamp(hostility, 0f, 100f);
+        float roll = Random.Range(0f, 100f);
+
+        Debug.Log($"🎲 {enemy.enemyType} Hostilidade: {hostility}% | Rolagem: {roll:F2}");
+
+        if (roll <= hostility)
         {
-            Debug.Log("💀 Inimigo ataca! Você morreu.");
+            Debug.Log($"{enemy.enemyType} se enfurece e te ataca! 💀 Jogador morreu.");
+            Debug.Log("🔁 Reiniciando cenário...");
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        else
+        {
+            Debug.Log($"{enemy.enemyType} deixa você passar...");
         }
 
         Destroy(enemy.gameObject);
