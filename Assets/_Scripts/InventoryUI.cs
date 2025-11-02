@@ -8,7 +8,7 @@ public class InventoryUI : MonoBehaviour
     public PlayerInventory playerInventory;
 
     [Header("Slots de Inventário (3 slots)")]
-    public List<Image> itemSlots; // arraste os 3 Image slots no Inspector
+    public List<Image> itemSlots;
 
     [Header("Ícones dos Equipamentos")]
     public Sprite picaretaIcon;
@@ -23,24 +23,16 @@ public class InventoryUI : MonoBehaviour
     [Header("Ícone Vazio")]
     public Sprite vazioIcon;
 
-    [Header("Configurações Visuais")]
-    public Color highlightColor = new Color(1f, 0.9f, 0.5f, 1f);
-    public float pulseSpeed = 2f;
-    public bool enablePulseEffect = true;
-
     private Dictionary<string, Sprite> itemSprites;
-    private float pulseTimer = 0f;
 
     void Awake()
     {
-        // 🔎 Garante referência ao inventário
         if (playerInventory == null)
             playerInventory = FindObjectOfType<PlayerInventory>();
     }
 
     void Start()
     {
-        // Cria o mapa item → sprite
         itemSprites = new Dictionary<string, Sprite>
         {
             { "picareta", picaretaIcon },
@@ -51,7 +43,6 @@ public class InventoryUI : MonoBehaviour
             { "folha de coca", folhaCocaIcon }
         };
 
-        // Atualiza UI inicial
         UpdateUI();
     }
 
@@ -60,40 +51,21 @@ public class InventoryUI : MonoBehaviour
         UpdateUI();
     }
 
-    void Update()
-    {
-        // 🔒 Evita erros se algo estiver nulo
-        if (playerInventory == null || itemSlots == null || itemSlots.Count == 0)
-            return;
-
-        // Efeito de pulsação nos slots preenchidos
-        if (enablePulseEffect)
-        {
-            pulseTimer += Time.deltaTime * pulseSpeed;
-            float pulse = (Mathf.Sin(pulseTimer) + 1f) / 2f;
-
-            List<string> items = playerInventory.GetItems();
-            for (int i = 0; i < itemSlots.Count; i++)
-            {
-                if (i < items.Count && !string.IsNullOrEmpty(items[i]))
-                {
-                    float alpha = Mathf.Lerp(0.8f, 1f, pulse);
-                    Color currentColor = itemSlots[i].color;
-                    itemSlots[i].color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
-                }
-            }
-        }
-    }
-
-    // 🔄 Atualiza os ícones conforme o inventário atual
     public void UpdateUI()
     {
-        // 🆕 Garante que o inventário esteja referenciado
+        // ✅ Se o inventário ainda não existir, apenas espera
         if (playerInventory == null)
             playerInventory = FindObjectOfType<PlayerInventory>();
 
-        if (playerInventory == null || itemSlots == null)
+        if (playerInventory == null)
             return;
+
+        // ✅ Verifica se os slots foram atribuídos
+        if (itemSlots == null || itemSlots.Count == 0)
+        {
+            Debug.LogWarning("⚠️ Nenhum slot de inventário foi atribuído no InventoryUI!");
+            return;
+        }
 
         List<string> items = playerInventory.GetItems();
 
@@ -107,49 +79,10 @@ public class InventoryUI : MonoBehaviour
             }
             else
             {
-                // Mostra ícone vazio
-                if (vazioIcon != null)
-                {
-                    itemSlots[i].sprite = vazioIcon;
-                    itemSlots[i].color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-                    itemSlots[i].enabled = true;
-                }
-                else
-                {
-                    itemSlots[i].enabled = false;
-                }
+                itemSlots[i].sprite = vazioIcon;
+                itemSlots[i].color = new Color(1, 1, 1, 0.3f);
+                itemSlots[i].enabled = true;
             }
         }
-    }
-
-    // 💡 Destaque visual de um slot específico
-    public void HighlightSlot(int slotIndex, float duration = 0.5f)
-    {
-        if (slotIndex >= 0 && slotIndex < itemSlots.Count)
-            StartCoroutine(HighlightSlotCoroutine(slotIndex, duration));
-    }
-
-    private System.Collections.IEnumerator HighlightSlotCoroutine(int slotIndex, float duration)
-    {
-        Image slot = itemSlots[slotIndex];
-        Color originalColor = slot.color;
-
-        float elapsed = 0f;
-        while (elapsed < duration / 2f)
-        {
-            elapsed += Time.deltaTime;
-            slot.color = Color.Lerp(originalColor, highlightColor, elapsed / (duration / 2f));
-            yield return null;
-        }
-
-        elapsed = 0f;
-        while (elapsed < duration / 2f)
-        {
-            elapsed += Time.deltaTime;
-            slot.color = Color.Lerp(highlightColor, originalColor, elapsed / (duration / 2f));
-            yield return null;
-        }
-
-        slot.color = originalColor;
     }
 }
