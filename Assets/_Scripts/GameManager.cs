@@ -1,39 +1,60 @@
-using UnityEngine;
+ï»¿using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject[] enemyPrefabs; // inimigo1, inimigo2, inimigo3
+    public GameObject[] enemyPrefabs;
+    public float baseHostilityChance = 15f;
+    public float famintoHasFoodBonus = 5f;
+    public float assombradoNoTorchBonus = 5f;
+    public float assombradoHasTorchPenalty = 5f;
+    public float briguentoNoPickaxeBonus = 5f;
+    public float briguentoHasPickaxePenalty = 5f;
+
+    private List<(GameObject prefab, string type)> encounters = new();
     private int currentEncounter = 0;
+
     private bool isEncounterActive = false;
+    private bool isDialogueActive = false;
+    private bool waitingForTunnel = false;
+
     private EnemyEncounter activeEnemy;
     private PlayerInventory playerInventory;
+    private TunnelMovement tunnelMovement;
 
-    // posição fixa para spawn do inimigo
-    private Vector3 enemySpawnPosition = new Vector3(1.47f, 0.9999999f, 3.755702f);
+    private readonly Vector3 enemySpawnPosition = new Vector3(1.47f, 1f, 3.75f);
 
     void Start()
     {
-        playerInventory = GetComponent<PlayerInventory>();
-        Debug.Log("Aperte ESPAÇO para avançar na mina...");
+        playerInventory = FindObjectOfType<PlayerInventory>();
+        tunnelMovement = FindObjectOfType<TunnelMovement>();
+
+        GenerateEncounters();
+        Debug.Log("Aperte ESPAÃ‡O para avanÃ§ar...");
     }
+
+    public void SetDialogueState(bool state) => isDialogueActive = state;
 
     void Update()
     {
-        // Avançar na mina (pressionar espaço)
-        if (Input.GetKeyDown(KeyCode.Space) && !isEncounterActive)
+        if (isDialogueActive)
         {
-            if (currentEncounter < enemyPrefabs.Length)
-            {
-                SpawnEnemy();
-            }
-            else
-            {
-                Debug.Log("Você chegou ao altar do Diabo...");
-                playerInventory.CheckOfferings();
-            }
+            if (Input.GetKeyDown(KeyCode.Space))
+                DialogueManager.Instance.NextLine();
+            return;
         }
 
-        // Resposta do jogador (1 = trocar, 2 = recusar)
+        if (waitingForTunnel)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Space) && !isEncounterActive)
+        {
+            tunnelMovement.MoveToNextPosition();
+            waitingForTunnel = true;
+            return;
+        }
+
         if (isEncounterActive)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -43,19 +64,34 @@ public class GameManager : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                Debug.Log("Você recusou a troca.");
+                HandleRefusal(activeEnemy);
                 EndEncounter();
             }
         }
     }
 
+    public void OnTunnelArrived()
+    {
+        waitingForTunnel = false;
+
+        if (currentEncounter < encounters.Count)
+            SpawnEnemy();
+        else
+            playerInventory.CheckOfferings();
+    }
+
     void SpawnEnemy()
     {
-        // Instancia o inimigo na posição fixa e sem rotação
-        GameObject enemyObj = Instantiate(enemyPrefabs[currentEncounter], enemySpawnPosition, Quaternion.identity);
+        var (prefab, type) = encounters[currentEncounter];
+        GameObject obj = Instantiate(prefab, enemySpawnPosition, Quaternion.identity);
+        activeEnemy = obj.GetComponent<EnemyEncounter>();
 
-        activeEnemy = enemyObj.GetComponent<EnemyEncounter>();
+        activeEnemy.ConfigureEncounter(type);
         activeEnemy.StartEncounter();
+
+        // ðŸŽ§ Se for o Ãºltimo encontro â†’ risada do Diabo
+        if (currentEncounter == encounters.Count - 1 && AudioManager.Instance != null)
+            AudioManager.Instance.PlayDevilLaugh();
 
         isEncounterActive = true;
         currentEncounter++;
@@ -64,6 +100,60 @@ public class GameManager : MonoBehaviour
     void EndEncounter()
     {
         isEncounterActive = false;
-        Debug.Log("Aperte ESPAÇO para continuar explorando...");
+        waitingForTunnel = false;
+        Debug.Log("Aperte ESPAÃ‡O para continuar...");
+    }
+
+    void GenerateEncounters()
+    {
+        encounters.Clear();
+        string[] t = { "item>oferenda", "oferenda>item", "oferenda>oferenda" };
+
+        for (int i = 0; i < 6; i++)
+            encounters.Add((enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], t[Random.Range(0, t.Length)]));
+    }
+
+    void HandleRefusal(EnemyEncounter enemy)
+    {
+        float hostility = baseHostilityChance;
+
+        bool hasPickaxe = playerInventory.HasItem("picareta");
+        bool hasTorch = playerInventory.HasItem("tocha");
+        bool hasFood = playerInventory.HasItem("comida");
+
+        switch (enemy.enemyType)
+        {
+            case EnemyEncounter.EnemyType.Faminto:
+                if (hasFood) hostility += famintoHasFoodBonus;
+                break;
+            case EnemyEncounter.EnemyType.Assombrado:
+                hostility += hasTorch ? -assombradoHasTorchPenalty : assombradoNoTorchBonus;
+                break;
+            case EnemyEncounter.EnemyType.Briguento:
+                hostility += hasPickaxe ? -briguentoHasPickaxePenalty : briguentoNoPickaxeBonus;
+                break;
+        }
+
+        hostility = Mathf.Clamp(hostility, 0f, 100f);
+        float roll = Random.Range(0f, 100f);
+
+        Debug.Log($"ðŸŽ² {enemy.enemyType} Hostilidade: {hostility}% | Rolagem: {roll:F2}");
+
+        if (roll <= hostility)
+        {
+            Debug.Log($"{enemy.enemyType} se enfurece e te ataca! ðŸ’€ Jogador morreu.");
+            // ðŸŽ§ Som de morte
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayDeath();
+
+            Debug.Log("ðŸ” Reiniciando cenÃ¡rio...");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        else
+        {
+            Debug.Log($"{enemy.enemyType} deixa vocÃª passar...");
+        }
+
+        Destroy(enemy.gameObject);
     }
 }
