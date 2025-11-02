@@ -7,20 +7,18 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: purple
+  m_Name: New Material 1 Variant
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
-  m_Parent: {fileID: 2100000, guid: f02f41c50d666054da042b6aff101922, type: 2}
-  m_ModifiedSerializedProperties: 2
+  m_Parent: {fileID: 2100000, guid: 623d270cd2cc1604795d6372f28bffac, type: 2}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _ALPHAPREMULTIPLY_ON
   - _EMISSION
   m_InvalidKeywords: []
-  m_LightmapFlags: 2
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Transparent
+  stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
@@ -29,6 +27,5 @@ Material:
     m_Ints: []
     m_Floats: []
     m_Colors:
-    - _Color: {r: 0.53374666, g: 0, b: 1, a: 0}
-    - _EmissionColor: {r: 0.013743318, g: 0.006586079, b: 0.051712915, a: 1}
+    - _EmissionColor: {r: 0.8392157, g: 0.37977934, b: 0.15294118, a: 1}
   m_BuildTextureStacks: []
